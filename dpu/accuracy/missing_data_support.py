@@ -2,10 +2,10 @@
 The PAMAP dataset is sparse, and this file aims to
 test how different ways of replacing nan values affect results
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Optional/subject106.dat'
 # Replace not a number values with 0

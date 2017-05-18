@@ -2,7 +2,7 @@
 This file contains running and processing of Heart Diseases Data set from UCI repository
 """
 from constants import HDD_HEADERS
-from model_processor import Processor
+from processors.model_processor import Processor
 
 
 class HddProcessor(Processor):

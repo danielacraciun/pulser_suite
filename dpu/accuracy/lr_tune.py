@@ -1,12 +1,10 @@
+import matplotlib
 import numpy
-from xgboost import XGBClassifier
-
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import StratifiedKFold
-from sklearn.preprocessing import LabelEncoder
-import matplotlib
+from xgboost import XGBClassifier
 
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 matplotlib.use('Agg')
 from matplotlib import pyplot

@@ -7,10 +7,6 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 
-def user_data():
-    return [68, 174, 18, 1]
-
-
 @app.route("/expose", methods=["POST", "GET"])
 def exposer():
     # Actualization of hr resources

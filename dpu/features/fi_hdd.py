@@ -5,7 +5,7 @@ It
 import matplotlib.pyplot as plt
 from xgboost import plot_importance
 
-from hdd_processor import HddProcessor
+from processors.hdd_processor import HddProcessor
 
 pp = HddProcessor(size=57)
 pp.run()

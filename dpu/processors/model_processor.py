@@ -1,10 +1,9 @@
 import pandas
-
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 
-from data_processor import DataProcessor
+from processors.data_processor import DataProcessor
 from utils import timing
 
 

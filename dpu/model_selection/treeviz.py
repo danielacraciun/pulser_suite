@@ -1,7 +1,7 @@
+import matplotlib.pyplot as plt
 from xgboost import plot_tree
 
-from pamap_processor import PamapProcessor
-import matplotlib.pyplot as plt
+from processors.pamap_processor import PamapProcessor
 test_url = '../ds/pamap2/Optional/subject106.dat'
 
 pp = PamapProcessor(url=test_url, impute=True, size=53)

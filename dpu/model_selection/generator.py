@@ -3,9 +3,10 @@ This file generates the whole PAMAP2 data brought together
 with the main attributes selected
 """
 import pandas
-from pandas import read_csv, DataFrame
+from pandas import DataFrame
+
 from constants import pamap_details
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 final = "ds/pamap2/spare_test.csv"
 # paths = {

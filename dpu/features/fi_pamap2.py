@@ -3,17 +3,10 @@ subject108 was chosen as sample because the actions cover
  the most activities (check details/PerformedActivitySummary.pdf)
  also reduces the row attributes to out discoverable ones and added relevant
 """
-import matplotlib.pyplot as plt
 import pandas
-from numpy import ravel
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import Imputer
-from sklearn.tree import DecisionTreeClassifier
-from xgboost import plot_importance, XGBClassifier
 
-from constants import PAMAP_HEADERS, pamap_details
-from pamap_processor import PamapProcessor
+from constants import pamap_details
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Protocol/subject106.dat'
 details = pamap_details[106]

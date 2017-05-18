@@ -1,9 +1,9 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from pandas import scatter_matrix
 
 from constants import PAMAP_HEADERS
-from pamap_processor import PamapProcessor
-import matplotlib.pyplot as plt
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Optional/subject106.dat'
 pp = PamapProcessor(url=test_url, size=53)

@@ -3,16 +3,15 @@ This file contains running and processing of PAMAP2 activity set from UCI reposi
 """
 import pandas
 from numpy import ravel
-
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import Imputer
 from xgboost import XGBClassifier
 
 from constants import PAMAP_HEADERS
-from model_processor import Processor
+from processors.model_processor import Processor
 from utils import timing
-import logging
+
 
 # todo: scale down the feature set by clearly measuring feature importance and availability
 class PamapProcessor(Processor):

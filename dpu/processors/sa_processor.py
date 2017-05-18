@@ -4,7 +4,7 @@ This file contains running and processing of SA Heart Disease data set
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
 
-from model_processor import Processor
+from processors.model_processor import Processor
 from utils import timing
 
 

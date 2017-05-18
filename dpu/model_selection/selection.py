@@ -1,11 +1,10 @@
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVC
-from xgboost import XGBClassifier
 import matplotlib.pyplot as plt
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from xgboost import XGBClassifier
 
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Optional/subject106.dat'
 

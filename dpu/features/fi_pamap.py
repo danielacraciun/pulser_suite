@@ -7,7 +7,7 @@ actions covers the most activities (check details/PerformedActivitySummary.pdf)
 import matplotlib.pyplot as plt
 from xgboost import plot_importance
 
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Protocol/subject106.dat'
 

@@ -1,16 +1,8 @@
-import pandas
 import numpy as np
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier, RandomForestRegressor, \
-    GradientBoostingClassifier
+import pandas
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVC
-from xgboost import XGBClassifier
-import matplotlib.pyplot as plt
-
-from pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/full_pamap.csv'
 

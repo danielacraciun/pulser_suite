@@ -1,10 +1,8 @@
-import pandas
-from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 from matplotlib import pyplot
+from sklearn.metrics import accuracy_score
+from xgboost import XGBClassifier
 
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Optional/subject106.dat'
 pp = PamapProcessor(url=test_url, impute=True, size=53)

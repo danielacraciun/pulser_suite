@@ -1,13 +1,10 @@
 import itertools
-import numpy as np
+
 import matplotlib.pyplot as plt
-
-from sklearn import svm, datasets
-from sklearn.model_selection import train_test_split
+import numpy as np
 from sklearn.metrics import confusion_matrix
-from pandas import read_csv
 
-from pamap_processor import PamapProcessor
+from processors.pamap_processor import PamapProcessor
 
 test_url = '../ds/pamap2/Optional/subject106.dat'
 pp = PamapProcessor(url=test_url, impute=True, size=53)
