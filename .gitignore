@@ -2,3 +2,4 @@
 *.sav
 /ds
 __pycache__/
+.idea/
