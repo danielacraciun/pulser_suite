@@ -3,3 +3,5 @@
 /ds
 __pycache__/
 .idea/
+*.db
+*.rst
