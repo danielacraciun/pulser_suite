@@ -16,3 +16,8 @@ hr_ranges = {
         (65, 200): (54, 84),
     }
 }
+
+# May be replaced with specific path to train/test ds
+train_ds = 'datasets/full_pamap.csv'
+test_ds = 'datasets/spare_test.csv'
+trained_models_folder = 'trained_models'

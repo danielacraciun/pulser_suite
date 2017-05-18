@@ -7,8 +7,10 @@ from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
 
 # Fetching latest generated file, ensuring completeness
-train = os.path.join(os.path.dirname(__file__), 'datasets/full_pamap.csv')
-test = os.path.join(os.path.dirname(__file__), 'datasets/spare_test.csv')
+from constant import trained_models_folder, train_ds, test_ds
+
+train = os.path.join(os.path.dirname(__file__), train_ds)
+test = os.path.join(os.path.dirname(__file__), test_ds)
 # latest_file = max(dir, key=os.path.getctime)
 
 # Reading latest dataset contents into variables
@@ -28,5 +30,5 @@ y = np.ravel(array[:, 0:1])
 
 # Save the model to disk
 today = datetime.now()
-filename = 'model_{}{}{}{}.sav'.format(today.hour, today.minute, today.day, today.month)
+filename = '{}/model_{}{}{}{}.sav'.format(trained_models_folder, today.hour, today.minute, today.day, today.month)
 pickle.dump(model, open(filename, 'wb'))
