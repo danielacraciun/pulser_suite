@@ -1,2 +1,4 @@
 *.csv
+*.sav
 /ds
+__pycache__/
