@@ -1,0 +1,19 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <h1>Welcome to Pulser</h1>
+        {% if not current_user.is_anonymous() %}
+            <p>Connect devices, then start monitoring!</p>
+            <p>
+                <a href="{{ url_for('user.panel') }}" class="btn btn-primary btn-large">Monitor</a>
+                <a href="{{ url_for('user.connections') }}" class="btn btn-primary btn-large">Connect</a>
+            </p>
+        {% else %}
+            <p>Register an account if you haven't yet, or log in!</p>
+        {% endif %}
+</div><!-- /.jumbotron -->
+
+{% endblock %}
+

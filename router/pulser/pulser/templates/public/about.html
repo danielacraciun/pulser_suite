@@ -1,0 +1,18 @@
+
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="body-content">
+    <div class="row">
+      <h1>About Pulser</h1>
+      <h4>
+          This application was created to help you monitor and supervise someone who deals with mobility issues and other ailments and needs your help.
+      <br />
+          {% if current_user.is_anonymous()  %}
+          If you need our tool, please register an account with us!
+        {% endif %}
+      </h4>
+    </div>
+</div>
+{% endblock %}
+

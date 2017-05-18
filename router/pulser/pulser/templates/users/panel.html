@@ -1,0 +1,65 @@
+
+{% extends "layout.html" %}
+
+{% block js %}
+<script type="text/javascript" charset="utf-8">
+function hide(){
+    $("#fall-warn").attr("class","hidden");
+}
+(function poll() {
+    $.ajax({
+        url: "http://localhost:5000/api/env/check_fall",
+        type: "GET",
+        success: function(data) {
+            var fall = data["fall"];
+            if (fall === "yes") {
+                $("#fall-warn").attr("class","alert alert-danger");
+            }
+        },
+        dataType: "json",
+        complete: setTimeout(function() {poll()}, 4000),
+        timeout: 6000
+    })
+})();
+</script>
+{% endblock %}
+
+{% block css %}
+<style>
+    .bordered{ border: 1px solid slategrey; border-radius: 25px;  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="fall-warn" class="hidden">
+  <strong>Danger!</strong> Care-receiver might have fallen! Ensure they are all right! <br />
+    Click here after checking on them: <a class="btn" onclick="hide()"><i class="fa fa-check" aria-hidden="true"></i></a>
+</div>
+{% if carereceiver == None %}
+    <h2>No care receiver connected connected yet!</h2>
+{% else %}
+<div class="panel panel-info">
+  <div class="panel-body"><h4 class="pull-left col-lg-4">Current care receiver is
+     <a data-toggle="tooltip" data-placement="right" title="Age: {{ carereceiver.age }} years  Height: {{ carereceiver.height }} cms  Weight:{{ carereceiver.weight }} kgs">{{ carereceiver.full_name }}</a>
+  </h4><a id="sync" href=""><i class="fa fa-refresh col-m-2 pull-right sync" aria-hidden="true"> Refresh</i></a></div>
+  <div class="panel-footer">
+    <div class="row">
+
+        <div class="col-lg-4 col-md-offset-1 pull-left bordered">
+          <h2><i class="fa fa-male"></i> Activity level</h2>
+          <h4>{{ level }}</h4>
+        </div>
+
+
+            <div class="col-lg-4 col-md-offset-2 bordered">
+          <h2><i class="fa fa-heart"></i> Heart status</h2>
+          <h4>{{ hr }}</h4>
+        </div>
+    </div>
+
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+

@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-wide">
+  <h1>Register</h1>
+    <br/>
+    <form id="careRegisterForm" class="form form-register" method="POST" action="" role="form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{form.first_name.label}}
+                {{form.first_name(placeholder="First Name", class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{form.last_name.label}}
+                {{form.last_name(placeholder="Last Name", class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{form.age.label}}
+                {{form.age(placeholder="in years", class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{form.height.label}}
+                {{form.height(placeholder="in cms", class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{form.weight.label}}
+                {{form.weight(placeholder="in kgs", class_="form-control")}}
+            </div>
+            <div class="form-group">
+                {{form.sex.label}}
+                {{form.sex(placeholder="0 for M, 1 for F", class_="form-control")}}
+            </div>
+            <br />
+            <p><input class="btn btn-default btn-submit" type="submit" value="Register"></p>
+    </form>
+</div>
+{% endblock %}
+

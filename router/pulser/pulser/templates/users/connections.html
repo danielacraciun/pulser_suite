@@ -1,0 +1,58 @@
+
+{% extends "layout.html" %}
+
+{% block css %}
+<style> hr{ border-top: 1px solid white;}</style>
+{% endblock %}
+
+{% block content %}
+<div class="body-content">
+    <div class="row">
+        <div class="col-lg-12">
+          <h2><i class="fa fa-user"></i> Care-receiver</h2>
+          <p>Here you need to add some details about the person you are monitoring before proceeding.</p>
+          <p>
+              {% if carereceiver == None %}
+                <a class="btn btn-default" href="{{ url_for('user.connect_cr') }}">Register someone &raquo;</a>
+              {% else %}
+                  Current care receiver is {{ carereceiver.full_name }}. <br />
+                <a class="btn btn-default" href="{{ url_for('user.disconnect_cr') }}">Unregister &raquo;</a>
+              {% endif %}
+          </p>
+        </div>
+    </div>
+
+    {% if carereceiver != None %}
+    <hr />
+    <div class="row">
+
+        <div class="col-lg-6">
+          <h2><i class="fa fa-spinner"></i> Movement sensor</h2>
+          <p>Register a movement sensor to your connected care-receiver or disconnect it.</p>
+          <p>
+              {% if movement_sensor == None %}
+                <a class="btn btn-default" href="{{ url_for('user.connect_move') }}">Connect phone &raquo;</a>
+              {% else %}
+                <a class="btn btn-default" href="{{ url_for('user.disconnect_move') }}">Disconnect phone &raquo;</a>
+              {% endif %}
+          </p>
+        </div>
+
+        <div class="col-lg-6">
+          <h2><i class="fa fa-heart-o"></i> Heart rate sensor</h2>
+          <p>Register a heart rate sensor to your connected care-receiver or disconnect it.</p>
+          <p>
+              {% if hr_sensor == None %}
+              <a href="{{ url_for('user.connect_hr') }}" class="btn btn-default">Connect Fitbit &raquo;</a>
+              {% else %}
+              <a href="{{ url_for('user.disconnect_hr') }}" class="btn btn-default">Disconnect Fitbit &raquo;</a>
+              {% endif %}
+            </p>
+       </div>
+
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
