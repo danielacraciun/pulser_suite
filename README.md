@@ -5,7 +5,10 @@ The suite of application that composes the pulser app: dpu, the data processing 
 - run ``` pip install requirements.txt```   
 - for brain:
   - run ```cd brain```
-  - ```python3 routes.py```
+  - download dataset (TODO add link) and place it the app folder
+  - point in constants.py the test_ds 
+  - run ```python3 trainer.py```
+  - run ```python3 routes.py```
 - for dpu:
   - run ```cd dpu```
   - ```python3 routes.py```
