@@ -21,3 +21,8 @@ hr_ranges = {
 train_ds = 'datasets/full_pamap.csv'
 test_ds = 'datasets/spare_test.csv'
 trained_models_folder = 'trained_models'
+
+# Temporary data source
+# todo: connect with main app for essential data
+def user_data():
+    return [68, 174, 18, 1]

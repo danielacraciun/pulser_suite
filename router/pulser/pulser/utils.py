@@ -42,14 +42,21 @@ def insert_env_data(data):
             group=group_id, timestamp=data[data_type]["timestamp"])
 
 def find_env_data(given_date=None):
+    to_dict = []
     if given_date:
         result = EnvData.query.order_by(EnvData.timestamp.desc()).all()
         for env_data in result:
             if abs(float(env_data.timestamp)/1000 - float(given_date)) < 100:
                 grouped = EnvData.query.filter_by(group=env_data.group).all()
-                return list(grouped)
+                ls = list(grouped)
+                for elem in ls:
+                    to_dict.append({"type": elem.sensor_type,"x": elem.x, "y": elem.y, "z":elem.z, "timestamp": elem.timestamp})
+                break
     else:
-        return list(EnvData.query.order_by(EnvData.timestamp.desc()).limit(20).all())
+        ls = list(EnvData.query.order_by(EnvData.timestamp.desc()).limit(20).all())
+        for elem in ls:
+            to_dict.append({"type": elem.sensor_type, "x": elem.x, "y": elem.y, "z":elem.z, "timestamp": elem.timestamp, "group":elem.group})
+    return to_dict
 
 def insert_hr_data(data, now: datetime):
     new_data = 0

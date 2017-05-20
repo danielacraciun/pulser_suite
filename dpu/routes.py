@@ -2,34 +2,37 @@ import json
 import os
 
 import requests
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+
+from utils import user_data
 
 app = Flask(__name__)
 
 
 @app.route("/expose", methods=["POST", "GET"])
 def exposer():
-    # Actualization of hr resources
-    requests.get("http://localhost:5000/api/hr/auth")
-    # Fetch latest data
-    r = requests.get("http://localhost:5000/api/forward")
-    data = r.json()
-    row = [*user_data()]
-    if data:
-        row.append(data["hr"]["value"])
-        env = data["env"]
-        env_values = {
-            "accelerometer": [],
-            "gyro": [],
-            "magnetometer": []
-        }
-        if env:
-            for env_data in env:
-                env_values[env_data["type"]].append(env_data["X"])
-                env_values[env_data["type"]].append(env_data["Y"])
-                env_values[env_data["type"]].append(env_data["Z"])
-            row.extend([*env_values["accelerometer"], *env_values["gyro"], *env_values["magnetometer"]])
-    return jsonify(row)
+    # import pudb; pu.db
+    row = {}
+    if request.data:
+        data = request.data.decode('utf-8').replace('\\', '').replace('"{', '{').replace('}"', '}')
+        data = json.loads(data)
+        row = [*user_data()]
+        if data:
+            row.append(data["hr"])
+            env = data["env"]
+            env_values = {
+                "accelerometer": [],
+                "gyro": [],
+                "magnetometer": []
+            }
+            if env:
+                for env_data in env:
+                    env_values[env_data["type"]].append(env_data["x"])
+                    env_values[env_data["type"]].append(env_data["y"])
+                    env_values[env_data["type"]].append(env_data["z"])
+                row.extend([*env_values["accelerometer"], *env_values["gyro"], *env_values["magnetometer"]])
+    r = requests.post("http://localhost:9000/predict", json=row)
+    return jsonify(r.json())
 
 if __name__ == "__main__":
     os.environ['DEBUG'] = "1"

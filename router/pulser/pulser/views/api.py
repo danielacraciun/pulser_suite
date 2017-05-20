@@ -81,39 +81,6 @@ def check_fall():
         return "Fall registered", 200
     return "Wrong call", 404
 
-@blueprint.route("/forwarder", methods=["POST", "GET"])
-def forwarder():
-    """
-    Forwarding pairs of hr and env data
-    :return: 
-    """
-    hr = latest_hr()
-    print(datetime.fromtimestamp(hr['timestamp']))
-    if(datetime.fromtimestamp(hr['timestamp']).hour == datetime.now().hour):
-        if hr:
-            corresponding_env = find_env_data(hr['timestamp'])
-            return json.dumps({
-                "hr": hr,
-                "env": corresponding_env if corresponding_env else []
-            })
-    return json.dumps({})
-
-@blueprint.route("/receiver", methods=["POST", "GET"])
-def receiver():
-    """
-    Forwarding pairs of hr and env data
-    :return: 
-    """
-    r = requests.get("http://localhost:8000/predict")
-    data = r.json()
-    if data["predict"] == "yes":
-        ActivityLevel.create(value=json.loads(request.data)["result"])
-        return jsonify({"prediction": "activity"})
-    elif data["predict"] == "no":
-        HeartLevel.create(value=json.loads(request.data)["result"], hr=json.loads(request.data)["hr"])
-        return jsonify({"prediction": "hr"})
-    return jsonify({"prediction": "no"})
-
 
 @blueprint.route("/env/check_fall", methods=["POST", "GET"])
 def get_fall():

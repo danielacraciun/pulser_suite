@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
+import json
+from datetime import datetime
+
+import requests
 from flask import (Blueprint, request, render_template, flash, url_for, send_from_directory, make_response,
                    redirect, current_app)
 
 from flask_login import login_required, logout_user, current_user
 
-from ..models.env_data import MovementSensor, HeartRateSensor, HeartData, ActivityLevel
-from pulser.utils import flash_errors, render_extensions
+from ..models.env_data import MovementSensor, HeartRateSensor, HeartData, ActivityLevel, HeartLevel
+from pulser.utils import flash_errors, render_extensions, latest_hr, find_env_data
 from pulser.forms.user import PasswordForm, EmailForm, UsernameForm, MovementSensorForm, HrSensorForm, CareReceiverForm
 from pulser.extensions import mail
 from pulser.models.user import User, CareReceiver
@@ -113,18 +117,45 @@ def connections():
 
 
 def check_hr(hr):
+    # just for testing todo: plug in real app
     import random
     foo = ["good", "bad", "medium"]
     return random.choice(foo)
 
+
+def forward_data():
+    hr = latest_hr()
+    ts = float(hr.timestamp)
+    if datetime.fromtimestamp(ts).hour == datetime.now().hour:
+        if hr:
+            corresponding_env = find_env_data(ts)
+            return json.dumps({
+                "hr": hr.value,
+                "env": corresponding_env if corresponding_env else []
+            })
+
+
 @blueprint.route('/panel', methods=['GET', 'POST'])
 @login_required
 def panel():
+    # import pudb; pu.db
+    r = forward_data()
+    r = requests.get("http://localhost:9000/predict", json=r)
+    if r.json():
+        data = r.json()
+        if data["predict"] == "yes" and data["result"] != -1:
+            ActivityLevel.create(value=data["result"])
+            HeartLevel.create(value=data["hr_stat"], hr=data["hr"])
+        elif data["predict"] == "no" and data["result"] != -1:
+            HeartLevel.create(value=data["hr_stat"], hr=data["hr"])
+
     carerecv = CareReceiver.query.first()
-    hr = HeartData.query.order_by(HeartData.timestamp.desc()).first()
+    hr = HeartLevel.query.order_by(HeartLevel.created_at.desc()).first()
     level = ActivityLevel.query.order_by(ActivityLevel.created_at.desc()).first()
-    hr = check_hr(hr)
-    return render_extensions('users/panel.html', carereceiver=carerecv, level=level, hr=hr)
+    return render_extensions('users/panel.html',
+                             carereceiver=carerecv,
+                             level=level.value if level else None,
+                             hr=hr.value if hr else None)
 
 
 @blueprint.route('/connect_move', methods=['GET', 'POST'])

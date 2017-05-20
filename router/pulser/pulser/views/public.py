@@ -110,4 +110,4 @@ def callback():
     })
 
     session['oauth_token'] = token
-    return redirect(url_for('.hr'))
+    return redirect(url_for('api.hr'))
