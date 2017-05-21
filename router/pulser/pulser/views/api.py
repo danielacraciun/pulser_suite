@@ -16,7 +16,7 @@ from ..utils import insert_env_data, insert_hr_data, latest_hr, find_env_data
 blueprint = Blueprint("api", __name__, url_prefix='/api',
                       static_folder="../static")
 
-# Temporary secret loading, will be moved to db
+# todo Temporary secret loading, will be moved to db
 client_id = "2288ZM"
 client_secret = "99817a911fd8693da50c4f71a680281b"
 authorization_base_url = 'https://www.fitbit.com/oauth2/authorize'
