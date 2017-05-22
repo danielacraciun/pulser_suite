@@ -87,25 +87,6 @@ def change_password():
     return render_extensions('users/change_password.html', resetform=form)
 
 
-@blueprint.route('/change_username', methods=['GET', 'POST'])
-@login_required
-def change_username():
-    form = UsernameForm()
-    if form.validate_on_submit():
-        current_user.username = form.username.data
-        current_user.save()
-        return redirect(url_for('user.profile'))
-    else:
-        flash_errors(form)
-
-    return render_extensions('users/change_username.html', resetform=form)
-
-@blueprint.route('/unsubscribe')
-@login_required
-def unsubscribe():
-    return render_extensions('users/unsubscribe.html')
-
-
 @blueprint.route('/connections', methods=['GET', 'POST'])
 @login_required
 def connections():
@@ -138,9 +119,17 @@ def forward_data():
 @blueprint.route('/panel', methods=['GET', 'POST'])
 @login_required
 def panel():
-    # import pudb; pu.db
     r = forward_data()
-    r = requests.get("http://localhost:9000/predict", json=r)
+    carerecv = CareReceiver.query.first()
+
+    try:
+        r = requests.get("http://localhost:9000/predict", json=r)
+    except requests.exceptions.ConnectionError:
+        flash("Unable to retrieve activity level and heart data", "danger")
+        return render_extensions('users/panel.html',
+                                 carereceiver=carerecv,
+                                 level=None, hr=None)
+
     if r.json():
         data = r.json()
         if data["predict"] == "yes" and data["result"] != -1:
@@ -149,7 +138,7 @@ def panel():
         elif data["predict"] == "no" and data["result"] != -1:
             HeartLevel.create(value=data["hr_stat"], hr=data["hr"])
 
-    carerecv = CareReceiver.query.first()
+
     hr = HeartLevel.query.order_by(HeartLevel.created_at.desc()).first()
     level = ActivityLevel.query.order_by(ActivityLevel.created_at.desc()).first()
     return render_extensions('users/panel.html',

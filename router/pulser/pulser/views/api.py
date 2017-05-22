@@ -8,6 +8,7 @@ from datetime import datetime
 import requests
 from flask import (Blueprint, request, render_template, flash, url_for, send_from_directory, make_response,
                    redirect, current_app, session, jsonify)
+from flask_login import login_required
 from requests_oauthlib import OAuth2Session
 
 from ..models.env_data import FallEvent, ActivityLevel, HeartLevel
@@ -24,8 +25,8 @@ token_url = 'https://api.fitbit.com/oauth2/token'
 base_url = 'https://api.fitbit.com/'
 FITBIT_URL = "https://api.fitbit.com/1/user/-/activities/heart/date/today/1d/1sec/time/{}:00/{}:59.json"
 
-
-@blueprint.route("/hr/auth")
+@blueprint.route("/hr/auth", methods=["POST"])
+@login_required
 def auth():
     """ Step 1: Authorization for data fetching from FitBit
     """
@@ -38,6 +39,7 @@ def auth():
 
 
 @blueprint.route("/hr/fetch", methods=["GET", "POST"])
+@login_required
 def hr():
     """Step 3: Fetching a protected resource using an OAuth 2 token. (in this case the intraday heartrate)
     """
@@ -58,6 +60,7 @@ def hr():
 
 
 @blueprint.route("/env/fetch", methods=["POST", "GET"])
+@login_required
 def get_environment_data():
     """
     Fetching and forwarding environment data from an Android device
@@ -75,6 +78,7 @@ def get_environment_data():
     return "Wrong endpoint", 404
 
 @blueprint.route("/env/fall", methods=["POST", "GET"])
+@login_required
 def check_fall():
     if request.data:
         FallEvent.create()
@@ -82,7 +86,8 @@ def check_fall():
     return "Wrong call", 404
 
 
-@blueprint.route("/env/check_fall", methods=["POST", "GET"])
+@blueprint.route("/env/check_fall", methods=["POST"])
+@login_required
 def get_fall():
     ev = FallEvent.query.first()
 

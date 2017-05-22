@@ -71,32 +71,15 @@ def about():
     form = LoginForm(request.form)
     return render_extensions("public/about.html", form=form)
 
+
 @blueprint.route('/robots.txt')
 @blueprint.route('/favicon.ico')
 def static_from_root():
     return send_from_directory(current_app.static_folder, request.path[1:])
 
-@blueprint.route('/sitemap.xml', methods=['GET'])
-def sitemap():
-    """
-    Generate sitemap.xml. Makes a list of urls and date modified.
-    """
-    pages = []
-    ten_days_ago = datetime.datetime.now() - datetime.timedelta(days=10)
-    ten_days_ago = ten_days_ago.date().isoformat()
-    # static pages
-    for rule in current_app.url_map.iter_rules():
-        if "GET" in rule.methods and len(rule.arguments) == 0:
-            pages.append([rule.rule, ten_days_ago])
 
-    sitemap_xml = render_template('public/sitemap_template.xml', pages=pages)
-    response = make_response(sitemap_xml)
-    response.headers["Content-Type"] = "application/xml"
-
-    return response
-
-
-@blueprint.route("/callback", methods=["GET"])
+@blueprint.route("/callback", methods=["GET", "POST"])
+@login_required
 def callback():
     """ Step 2: Retrieving an access token.
     """

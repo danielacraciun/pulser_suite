@@ -14,7 +14,7 @@ from pulser.extensions import (
     migrate,
     debug_toolbar,
 )
-from pulser.views import public, user, blog, api
+from pulser.views import public, user, api
 
 
 def create_app(config_object=ProdConfig):
@@ -49,7 +49,6 @@ def register_extensions(app):
 def register_blueprints(app):
     app.register_blueprint(public.blueprint)
     app.register_blueprint(user.blueprint)
-    app.register_blueprint(blog.blueprint)
     app.register_blueprint(api.blueprint)
     return None
 
