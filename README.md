@@ -5,12 +5,10 @@ The suite of application that composes the pulser app: dpu, the data processing 
 - run ``` pip install requirements.txt```   
 - for brain:
   - run ```cd brain```
-  - download dataset (TODO add link) and place it the app folder
-  - point in constants.py the test_ds 
-  - run ```python3 trainer.py```
+  - download trained model from [here](https://drive.google.com/open?id=0B9cBcdhbAeQbSG14WmR6d29pQ1U) and place it in the trained_models folder
   - run ```python3 routes.py```
 - for main app:
   - run ```cd router/pulser```
-  ...
-  - ```python3 manage.py --host 0.0.0.0```
+  - run ```sudo pip install -r requirements.txt```
+  - run ```python3 manage.py --host 0.0.0.0```
 - for mobile app - set up on mobile phone with Android Studio
