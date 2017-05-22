@@ -6,7 +6,7 @@ import requests
 from flask import Flask, jsonify, session, request
 from numpy import asarray
 
-from constant import hr_ranges, user_data
+from constant import hr_ranges, user_data, current_model, trained_models_folder
 
 app = Flask(__name__)
 
@@ -29,7 +29,7 @@ def get_rows():
         data = request.data.decode('utf-8').replace('\\', '').replace('"{', '{').replace('}"', '}')
         data = json.loads(data)
         if data:
-            row = [*user_data(), data["hr"]]
+            row = [*user_data(), data["hr"]]  # send as 0 so it gets ignored by classifier
 
             env = data["env"]
             env_values = {
@@ -47,7 +47,7 @@ def get_rows():
             if len(row) == 5:
                 p = {"predict": "no", "hr_stat": check_hr_range(row), "hr": row[-1]}
             elif len(row) == 14:
-                filename = "trained_models/model_0445.sav"
+                filename = "{}/{}".format(trained_models_folder, current_model)
                 loaded_model = pickle.load(open(filename, 'rb'))
                 predict_row = list(map(float, row))
                 X = asarray(a=predict_row)

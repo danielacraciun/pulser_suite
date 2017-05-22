@@ -8,7 +8,7 @@ from pandas import DataFrame
 from constants import pamap_details
 from processors.pamap_processor import PamapProcessor
 
-final = "ds/pamap2/spare_test.csv"
+final = "ds/spare_test.csv"
 # paths = {
 #     101: "ds/pamap2/Protocol/subject101.dat",
 #     102: "ds/pamap2/Protocol/subject102.dat",
@@ -17,9 +17,9 @@ final = "ds/pamap2/spare_test.csv"
 #     108: "ds/pamap2/Protocol/subject108.dat",
 # }
 paths = {
-105: "ds/pamap2/Protocol/subject105.dat"
+107: "ds/subject107.dat",
 }
-pp = PamapProcessor(url=paths[105])
+pp = PamapProcessor(url=paths[list(paths.keys())[0]])
 
 frames = []
 for subject in paths.keys():
@@ -34,6 +34,16 @@ for subject in paths.keys():
     activities = DataFrame(columns=['activity'])
     activities['activity'] = df[1]
 
+    change_to = {}
+    for i in range(25):
+        if i in [1, 2, 3, 4, 9, 10, 11]:
+            change_to[i] = 1
+        elif i in [7, 13, 17, 18]:
+            change_to[i] = 2
+        elif i in [5, 6, 12, 16, 19, 20, 24]:
+            change_to[i] = 3
+    activities = activities.applymap(lambda s: change_to.get(s) if s in change_to else s)
+
     # Remove unused columns:
     # 0 - timestamp
     # 1 - activity id, this is to predict
@@ -47,9 +57,10 @@ for subject in paths.keys():
         df.insert(0, k, [v] * df.shape[0])
 
     df = df.fillna(0)
-    # add activity id at the end
+    # add activity id at the beginning
     df.insert(0, "activity", activities['activity'])
     print("all set up! appending {} to group of data frames!".format(subject))
+    df = df[df.activity != 0]
     frames.append(df.iloc[:,range(15)])
 
 print("concatenating all {} frames".format(len(frames)))

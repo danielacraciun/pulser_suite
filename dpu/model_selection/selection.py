@@ -6,7 +6,7 @@ from xgboost import XGBClassifier
 
 from processors.pamap_processor import PamapProcessor
 
-test_url = '../ds/pamap2/Optional/subject106.dat'
+test_url = '../ds/full_pamap.csv'
 
 # prepare models
 models = []
