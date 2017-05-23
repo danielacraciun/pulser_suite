@@ -7,7 +7,7 @@ import requests
 from flask import Flask, jsonify, session, request
 from numpy import asarray
 
-from constant import hr_ranges, user_data, current_model, trained_models_folder
+from constant import hr_ranges, current_model, trained_models_folder
 
 app = Flask(__name__)
 
