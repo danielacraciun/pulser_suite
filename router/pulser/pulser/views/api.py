@@ -11,25 +11,20 @@ from flask import (Blueprint, request, render_template, flash, url_for, send_fro
 from flask_login import login_required
 from requests_oauthlib import OAuth2Session
 
-from ..models.env_data import FallEvent, ActivityLevel, HeartLevel, MovementSensor
+from ..constants import authorization_base_url, FITBIT_URL
+from ..models.env_data import FallEvent, ActivityLevel, HeartLevel, MovementSensor, HeartRateSensor
 from ..utils import insert_env_data, insert_hr_data, latest_hr, find_env_data
 
 blueprint = Blueprint("api", __name__, url_prefix='/api',
                       static_folder="../static")
-
-# todo Temporary secret loading, will be moved to db
-client_id = "2288ZM"
-client_secret = "99817a911fd8693da50c4f71a680281b"
-authorization_base_url = 'https://www.fitbit.com/oauth2/authorize'
-token_url = 'https://api.fitbit.com/oauth2/token'
-base_url = 'https://api.fitbit.com/'
-FITBIT_URL = "https://api.fitbit.com/1/user/-/activities/heart/date/today/1d/1sec/time/{}:00/{}:59.json"
 
 @blueprint.route("/hr/auth", methods=["POST"])
 @login_required
 def auth():
     """ Step 1: Authorization for data fetching from FitBit
     """
+    client_data = HeartRateSensor.query.first()
+    client_id, client_secret = client_data.client_id, client_data.client_secret
     oauth_session = OAuth2Session(client_id, scope=['heartrate'])
     authorization_url, state = oauth_session.authorization_url(authorization_base_url)
 
@@ -47,6 +42,8 @@ def hr():
     if request.data:
         heart_rate_series_past_hour = json.loads(request.data)
     else:
+        client_data = HeartRateSensor.query.first()
+        client_id, client_secret = client_data.client_id, client_data.client_secret
         token = session.get('oauth_token', None)
         if not token:
             return redirect(url_for('.auth'))

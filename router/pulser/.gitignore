@@ -45,3 +45,6 @@ docs/_build
 # Virtualenvs
 env/
 libs/
+
+# Data
+ds/
