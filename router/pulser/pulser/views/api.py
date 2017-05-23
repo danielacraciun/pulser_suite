@@ -11,7 +11,7 @@ from flask import (Blueprint, request, render_template, flash, url_for, send_fro
 from flask_login import login_required
 from requests_oauthlib import OAuth2Session
 
-from ..models.env_data import FallEvent, ActivityLevel, HeartLevel
+from ..models.env_data import FallEvent, ActivityLevel, HeartLevel, MovementSensor
 from ..utils import insert_env_data, insert_hr_data, latest_hr, find_env_data
 
 blueprint = Blueprint("api", __name__, url_prefix='/api',
@@ -60,7 +60,6 @@ def hr():
 
 
 @blueprint.route("/env/fetch", methods=["POST", "GET"])
-@login_required
 def get_environment_data():
     """
     Fetching and forwarding environment data from an Android device
@@ -69,12 +68,9 @@ def get_environment_data():
     if request.data:
         data = request.data.decode('utf-8').replace('\\', '').replace('"{', '{').replace('}"', '}')
         data = json.loads(data)
-
-        # Sanity check so that all data is present
-        if all(field in data.keys() for field in ["gyro", "magnetometer", "accelerometer"]):
+        if data["secret"] == MovementSensor.query.first().secret_key:
             insert_env_data(data)
             return "Accepted", 200
-        return "Missing environment descriptor", 400
     return "Wrong endpoint", 404
 
 @blueprint.route("/env/fall", methods=["POST", "GET"])
