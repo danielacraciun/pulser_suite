@@ -1,6 +1,7 @@
 import json
 import os
 import pickle
+from collections import OrderedDict
 
 import requests
 from flask import Flask, jsonify, session, request
@@ -29,14 +30,13 @@ def get_rows():
         data = request.data.decode('utf-8').replace('\\', '').replace('"{', '{').replace('}"', '}')
         data = json.loads(data)
         if data:
-            row = [*user_data(), data["hr"]]  # send as 0 so it gets ignored by classifier
+            row = [*data["user_data"], data["hr"]]  # send as 0 so it gets ignored by classifier
 
             env = data["env"]
-            env_values = {
-                "accelerometer": [],
-                "gyro": [],
-                "magnetometer": []
-            }
+            env_values = OrderedDict()
+            env_values["accelerometer"] =  []
+            env_values["gyro"] = []
+            env_values["magnetometer"] = []
             if env:
                 for env_data in env:
                     env_values[env_data["type"]].append(env_data["x"])
@@ -44,15 +44,17 @@ def get_rows():
                     env_values[env_data["type"]].append(env_data["z"])
                 row.extend([*env_values["accelerometer"], *env_values["gyro"], *env_values["magnetometer"]])
 
-            if len(row) == 5:
-                p = {"predict": "no", "hr_stat": check_hr_range(row), "hr": row[-1]}
-            elif len(row) == 14:
-                filename = "{}/{}".format(trained_models_folder, current_model)
-                loaded_model = pickle.load(open(filename, 'rb'))
-                predict_row = list(map(float, row))
-                X = asarray(a=predict_row)
-                res = loaded_model.predict(X)
-                p = {"predict": "yes", "result": list(res)[0], "hr_stat": check_hr_range(row), "hr": row[-1]}
+
+            filename = "{}/{}".format(trained_models_folder, current_model)
+            loaded_model = pickle.load(open(filename, 'rb'))
+            predict_row = list(map(float, row))
+            X = asarray(a=predict_row)
+            res = loaded_model.predict(X)
+            print(X)
+            p = {
+                "predict": "yes", "result": list(res)[0],
+                "hr_stat": check_hr_range(row), "hr": row[-1]
+            }
     return jsonify(p)
 
 

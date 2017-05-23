@@ -8,13 +8,13 @@ import datetime
 
 from flask_login import login_user, login_required, logout_user
 
+from pulser.models.env_data import HeartRateSensor
 from pulser.extensions import login_manager
 from pulser.models.user import User
 from pulser.forms.public import LoginForm
 from pulser.forms.user import RegisterForm
 from pulser.utils import flash_errors, render_extensions
 from pulser.database import db
-from .api import client_id, client_secret, token_url
 from requests_oauthlib import OAuth2Session
 
 
@@ -83,6 +83,8 @@ def static_from_root():
 def callback():
     """ Step 2: Retrieving an access token.
     """
+    client_data = HeartRateSensor.query.first()
+    client_id, client_secret = client_data.client_id, client_data.client_secret
     pair_as_bytes = "{}:{}".format(client_id, client_secret).encode('utf-8')
     pair = standard_b64encode(pair_as_bytes).decode('utf-8')
     oauth_session = OAuth2Session(client_id, scope=['heartrate'], redirect_uri="localhost:5000/callback")

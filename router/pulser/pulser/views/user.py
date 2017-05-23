@@ -8,8 +8,9 @@ from flask import (Blueprint, request, render_template, flash, url_for, send_fro
 
 from flask_login import login_required, logout_user, current_user
 
+from ..constants import activity_level_mapper, hr_mapper
 from ..models.env_data import MovementSensor, HeartRateSensor, HeartData, ActivityLevel, HeartLevel
-from pulser.utils import flash_errors, render_extensions, latest_hr, find_env_data
+from pulser.utils import flash_errors, render_extensions, latest_hr, find_env_data, latest_env, find_hr_data, group_env
 from pulser.forms.user import PasswordForm, EmailForm, UsernameForm, MovementSensorForm, HrSensorForm, CareReceiverForm
 from pulser.extensions import mail
 from pulser.models.user import User, CareReceiver
@@ -96,30 +97,28 @@ def connections():
     print(move, hr)
     return render_extensions('users/connections.html', movement_sensor=move, hr_sensor=hr, carereceiver=cr)
 
-
-def check_hr(hr):
-    # just for testing todo: plug in real app
-    import random
-    foo = ["good", "bad", "medium"]
-    return random.choice(foo)
-
-
 def forward_data():
-    hr = latest_hr()
-    ts = float(hr.timestamp)
-    if datetime.fromtimestamp(ts).hour == datetime.now().hour:
-        if hr:
-            corresponding_env = find_env_data(ts)
+    e = latest_env()
+    ts = float(e.timestamp)
+    if datetime.fromtimestamp(ts / 1000).hour == datetime.now().hour:
+        if e:
+            grouped = group_env(e)
+            corresponding_hr = find_hr_data(ts)
+            current_cr =  CareReceiver.query.first()
             return json.dumps({
-                "hr": hr.value,
-                "env": corresponding_env if corresponding_env else []
+                "user_data": [current_cr.weight, current_cr.height, current_cr.age, current_cr.sex],
+                "hr": corresponding_hr.value if corresponding_hr else 0,
+                "env": grouped if len(grouped) == 3 else []
             })
+    else:
+        return {}
 
 
 @blueprint.route('/panel', methods=['GET', 'POST'])
 @login_required
 def panel():
     r = forward_data()
+    print(r)
     carerecv = CareReceiver.query.first()
 
     try:
@@ -143,8 +142,8 @@ def panel():
     level = ActivityLevel.query.order_by(ActivityLevel.created_at.desc()).first()
     return render_extensions('users/panel.html',
                              carereceiver=carerecv,
-                             level=level.value if level else None,
-                             hr=hr.value if hr else None)
+                             level=activity_level_mapper[level.value] if level else None,
+                             hr=hr_mapper[hr.value] if hr else None)
 
 
 @blueprint.route('/connect_move', methods=['GET', 'POST'])

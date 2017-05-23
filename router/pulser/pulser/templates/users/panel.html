@@ -7,19 +7,22 @@ function hide(){
     $("#fall-warn").attr("class","hidden");
 }
 (function poll() {
-   setTimeout(function() {
-       $.ajax({ url:  "http://localhost:5000/api/env/check_fall", success: function(data) {
+    $.ajax({
+        url: "http://localhost:5000/api/env/check_fall",
+        type: "GET",
+        success: function(data) {
             var fall = data["fall"];
             if (fall === "yes") {
                 $("#fall-warn").attr("class","alert alert-danger");
             }
-       }, type: "POST", dataType: "json", complete: poll });
-    }, 5000);
+        },
+        dataType: "json",
+        complete: setTimeout(function() {poll()}, 4000),
+        timeout: 6000
+    })
 })();
-
 </script>
 {% endblock %}
-
 {% block css %}
 <style>
     .bordered{ border: 1px solid slategrey; border-radius: 25px;  }

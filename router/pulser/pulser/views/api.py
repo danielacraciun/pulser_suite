@@ -71,16 +71,17 @@ def get_environment_data():
     return "Wrong endpoint", 404
 
 @blueprint.route("/env/fall", methods=["POST", "GET"])
-@login_required
 def check_fall():
     if request.data:
-        FallEvent.create()
-        return "Fall registered", 200
+        data = request.data.decode('utf-8').replace('\\', '').replace('"{', '{').replace('}"', '}')
+        data = json.loads(data)
+        if data["secret"] == MovementSensor.query.first().secret_key:
+            FallEvent.create()
+            return "Fall registered", 200
     return "Wrong call", 404
 
 
-@blueprint.route("/env/check_fall", methods=["POST"])
-@login_required
+@blueprint.route("/env/check_fall", methods=["GET", "POST"])
 def get_fall():
     ev = FallEvent.query.first()
 

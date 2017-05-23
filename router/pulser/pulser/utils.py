@@ -78,3 +78,21 @@ def latest_hr():
         hr_obj.sent = True
         hr_obj.save()
         return hr_obj
+
+def latest_env():
+    return EnvData.query.order_by(EnvData.timestamp.desc()).first()
+
+def find_hr_data(given_date=None):
+    result = HeartData.query.order_by(HeartData.timestamp.desc()).all()
+    for hr in result:
+        if abs(float(hr.timestamp) - float(given_date) * 1000) < 100:
+            return hr
+
+def group_env(env_data):
+    data = []
+    grouped = EnvData.query.filter_by(group=env_data.group).all()
+    ls = list(grouped)
+    for elem in ls:
+        data.append(
+            {"type": elem.sensor_type, "x": elem.x, "y": elem.y, "z": elem.z, "timestamp": elem.timestamp})
+    return data
