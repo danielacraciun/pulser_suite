@@ -8,6 +8,7 @@ import datetime
 
 from flask_login import login_user, login_required, logout_user
 
+from pulser.constants import token_url
 from pulser.models.env_data import HeartRateSensor
 from pulser.extensions import login_manager
 from pulser.models.user import User

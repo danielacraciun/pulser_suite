@@ -3,7 +3,7 @@ import json
 from base64 import standard_b64encode
 
 import dataset
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from flask import (Blueprint, request, render_template, flash, url_for, send_from_directory, make_response,
@@ -12,14 +12,13 @@ from flask_login import login_required
 from requests_oauthlib import OAuth2Session
 
 from ..constants import authorization_base_url, FITBIT_URL
-from ..models.env_data import FallEvent, ActivityLevel, HeartLevel, MovementSensor, HeartRateSensor
+from ..models.env_data import FallEvent, ActivityLevel, HeartLevel, MovementSensor, HeartRateSensor, HeartData
 from ..utils import insert_env_data, insert_hr_data, latest_hr, find_env_data
 
 blueprint = Blueprint("api", __name__, url_prefix='/api',
                       static_folder="../static")
 
-@blueprint.route("/hr/auth", methods=["POST"])
-@login_required
+@blueprint.route("/hr/auth", methods=["POST", "GET"])
 def auth():
     """ Step 1: Authorization for data fetching from FitBit
     """
@@ -52,8 +51,8 @@ def hr():
         heart_rate_series_past_hour = heart_rate_response.json()["activities-heart-intraday"]["dataset"]
     created = insert_hr_data(heart_rate_series_past_hour, crt_time)
     if created:
-        return "Accepted, {} rows inserted".format(created), 200
-    return "All done", 200
+        return jsonify({"status": created})
+    return jsonify({"status": -1})
 
 
 @blueprint.route("/env/fetch", methods=["POST", "GET"])
@@ -89,5 +88,13 @@ def get_fall():
         ev.delete()
         return jsonify({"fall": "yes"})
     return jsonify({"fall": "no"})
+
+
+@blueprint.route("/env/check_hr", methods=["GET", "POST"])
+def get_hr():
+    hr = latest_hr(date_restricted=True)
+    print({"val": hr.value if hr else 0})
+    return jsonify({"val": hr.value if hr else 0})
+
 
 

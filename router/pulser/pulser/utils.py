@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Helper utilities and decorators."""
 from flask import flash, render_template, current_app
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import strptime
 
 from .models.env_data import EnvData, HeartData
@@ -70,23 +70,36 @@ def insert_hr_data(data, now: datetime):
     return new_data
 
 
-def latest_hr():
+def latest_hr(date_restricted=False):
     """ Send earliest hr data that hasn't been sent yet, we don't care about matching with env data
         because we provide a resource """
-    hr_obj = HeartData.query.filter_by(sent=False).order_by(HeartData.timestamp.desc()).first()
-    if hr_obj:
-        hr_obj.sent = True
-        hr_obj.save()
-        return hr_obj
+    if date_restricted:
+        hrs = HeartData.query.filter_by(sent=False).order_by(HeartData.timestamp.asc()).all()
+        for hr in hrs:
+            if datetime.fromtimestamp(float(hr.timestamp)) > datetime.now() - timedelta(minutes=3):
+                print(hr.value, datetime.fromtimestamp(float(hr.timestamp)))
+                hr.sent = True
+                hr.save()
+                return hr
+    else:
+        hr_obj = HeartData.query.filter_by(sent=False).order_by(HeartData.timestamp.asc()).first()
+        if hr_obj:
+            hr_obj.sent = True
+            hr_obj.save()
+            return hr_obj
 
 def latest_env():
     return EnvData.query.order_by(EnvData.timestamp.desc()).first()
 
 def find_hr_data(given_date=None):
-    result = HeartData.query.order_by(HeartData.timestamp.desc()).all()
-    for hr in result:
-        if abs(float(hr.timestamp) - float(given_date) * 1000) < 100:
+    hr_objs = HeartData.query.filter_by(sent=False).order_by(HeartData.timestamp.desc()).all()
+    for hr in hr_objs:
+        if abs(float(hr.timestamp) - float(given_date)/1000) < 500:
+            hr.sent = True
+            hr.save()
             return hr
+        else:
+            return None
 
 def group_env(env_data):
     data = []

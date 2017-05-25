@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import requests
 from flask import (Blueprint, request, render_template, flash, url_for, send_from_directory, make_response,
@@ -100,7 +100,7 @@ def connections():
 def forward_data():
     e = latest_env()
     ts = float(e.timestamp)
-    if datetime.fromtimestamp(ts / 1000).hour == datetime.now().hour:
+    if datetime.fromtimestamp(ts / 1000) > datetime.now() - timedelta(minutes=1):
         if e:
             grouped = group_env(e)
             corresponding_hr = find_hr_data(ts)
@@ -111,15 +111,25 @@ def forward_data():
                 "env": grouped if len(grouped) == 3 else []
             })
     else:
-        return {}
+        return json.dumps({"err_env": True})
 
 
 @blueprint.route('/panel', methods=['GET', 'POST'])
 @login_required
 def panel():
+
     r = forward_data()
-    print(r)
+
     carerecv = CareReceiver.query.first()
+    print(json.loads(r))
+    if json.loads(r).get("err_env", None):
+        flash("Environment data is not registered correctly. Check the movement sensor.", "warning")
+        return render_extensions('users/panel.html',
+                                 carereceiver=carerecv,
+                                 level=None, hr=None)
+    elif json.loads(r).get("hr", 0) == 0:
+        flash("Heart data is too old for accurate prediction. "
+              "Check the heart rate sensor is correctly placed and synced. (press refresh to re-sync manually)", "warning")
 
     try:
         r = requests.get("http://localhost:9000/predict", json=r)

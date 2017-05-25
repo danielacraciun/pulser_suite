@@ -29,7 +29,17 @@
       {{ _GOOGLE_ANALYTICS }}
   </script>
 
-  {% block css %}{% endblock %}
+  {% block css %}
+      <style>
+      .blink_me {
+  animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+      </style>
+  {% endblock %}
 
 </head>
 <body class="{% block body_class %}{% endblock %}">

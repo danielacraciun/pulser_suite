@@ -5,7 +5,32 @@
 <script type="text/javascript" charset="utf-8">
 function hide(){
     $("#fall-warn").attr("class","hidden");
+    $("#hr-ok").attr("class","hidden");
 }
+$('#sync').click(function() {
+//Send the AJAX call to the server
+  $.ajax({
+  //The URL to process the request
+    'url' : 'http://localhost:5000/api/hr/fetch',
+  //The type of request, also known as the "method" in HTML forms
+  //Can be 'GET' or 'POST'
+    'type' : 'GET',
+  //Any post-data/get-data parameters
+  //This is optional
+  //The response from the server
+    'success' : function(data) {
+    //You can use any jQuery/JavaScript here!!!
+        console.log(data["status"]);
+      if (data["status"] > 1) {
+          console.log("done");
+        $("#hr-ok").attr("class","alert alert-success");
+      } else {
+          $(".hr").attr("class","hidden");
+      }
+    }
+  });
+});
+
 (function poll() {
     $.ajax({
         url: "http://localhost:5000/api/env/check_fall",
@@ -17,19 +42,40 @@ function hide(){
             }
         },
         dataType: "json",
-        complete: setTimeout(function() {poll()}, 4000),
-        timeout: 6000
-    })
-})();
+        complete: setTimeout(function() {poll()}, 1000),
+        timeout: 50000
+    });})();
+
+(function poll2() {
+    $.ajax({
+        url: "http://localhost:5000/api/env/check_hr",
+        type: "GET",
+        success: function(data) {
+            $("#hr").animate({opacity: 0.25}, 2000, function() {
+    // Animation complete.
+});
+            $("#hr").text(data["val"]);
+                        $("#hr").animate({opacity: 1}, 2000, function() {
+    // Animation complete.
+});
+        },
+        dataType: "json",
+        complete: setTimeout(function() {poll2()}, 5000),
+        timeout: 5000
+    });})();
 </script>
 {% endblock %}
 {% block css %}
 <style>
-    .bordered{ border: 1px solid slategrey; border-radius: 25px;  }
+    .bordered{ border: 1px solid slategrey; border-radius: 30px;  }
 </style>
 {% endblock %}
 
 {% block content %}
+    <div id="hr-ok" class="hidden">
+    Heart rate sensor is now correctly placed and sending data!
+        <a class="btn" onclick="hide()">Close</a>
+</div>
 <div id="fall-warn" class="hidden">
   <strong>Danger!</strong> Care-receiver might have fallen! Ensure they are all right! <br />
     Click here after checking on them: <a class="btn" onclick="hide()"><i class="fa fa-check" aria-hidden="true"></i></a>
@@ -51,8 +97,9 @@ function hide(){
 
 
             <div class="col-lg-4 col-md-offset-2 bordered">
-          <h2><i class="fa fa-heart"></i> Heart status</h2>
-          <h4>{{ hr }}</h4>
+          <h2><i class="fa fa-heart"></i> Heart status </h2>
+                <h4> {{ hr }} <div id="hr" class="bordered centered col-xs-2" style="text-align: center; background-color: firebrick"></div></h4>
+
         </div>
     </div>
 

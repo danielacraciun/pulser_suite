@@ -10,7 +10,7 @@ activity_level_mapper = {
 }
 
 hr_mapper = {
-    0: "No data yet",
+    0: "No recent data",
     1: "Good",
     2: "Abnormal"
 }
