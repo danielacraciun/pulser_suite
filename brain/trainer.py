@@ -23,11 +23,6 @@ y = np.ravel(array[:, 0:1])
 model = RandomForestClassifier()
 model.fit(X, y)
 
-data = pandas.read_csv(test, sep=',')
-array = data.values
-X = array[:, 1:15]
-y = np.ravel(array[:, 0:1])
-
 # Save the model to disk
 today = datetime.now()
 filename = '{}/model_{}{}{}{}.sav'.format(trained_models_folder, today.hour, today.minute, today.day, today.month)
