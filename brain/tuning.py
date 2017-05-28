@@ -22,36 +22,18 @@ y = np.ravel(array1[:, 0:1])
 Xt = array2[:, 1:15]
 yt = np.ravel(array2[:, 0:1])
 
-# model = RandomForestClassifier()
-# param_grid = {
-#     'n_estimators': [16, ],
-#     'max_features': [1, 'sqrt', 10],
-#     'criterion': ['gini', 'entropy']
-#     "bootstrap": [True, False],
-#     "max_depth": [None, 1, 5, 10],
-#     "min_samples_split": [3, 4, 5],
-#     "min_samples_leaf": [2, 3],
-# }
-#
-# CV_rfc = GridSearchCV(estimator=model, param_grid=param_grid, cv=5)
-# CV_rfc.fit(X, y)
-# print(CV_rfc.best_params_)
-# print(CV_rfc.best_score_)
+model = RandomForestClassifier()
+param_grid = {
+    'n_estimators': [16, ],
+    'max_features': [1, 'sqrt', 10],
+    'criterion': ['gini', 'entropy'],
+    "bootstrap": [True, False],
+    "max_depth": [None, 1, 5, 10],
+    "min_samples_split": [3, 4, 5],
+    "min_samples_leaf": [2, 3],
+}
 
-model = RandomForestClassifier(n_estimators=16,
-                               max_features='sqrt',
-                               criterion='entropy',
-                               bootstrap=True,
-                               min_samples_split=3,
-                               min_samples_leaf=2,
-                               verbose=1,
-                               warm_start=True,
-                               )
-print("Fitting model")
-model.fit(X, y)
-
-print("Checking accuracy")
-y_pred = model.predict(Xt)
-predictions = [round(value) for value in y_pred]
-accuracy = accuracy_score(yt, predictions)
-print(accuracy)
+CV_rfc = GridSearchCV(estimator=model, param_grid=param_grid, cv=5)
+CV_rfc.fit(X, y)
+print(CV_rfc.best_params_)
+print(CV_rfc.best_score_)

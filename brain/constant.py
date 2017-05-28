@@ -18,7 +18,7 @@ hr_ranges = {
 }
 
 # May be replaced with specific path to train/test ds
-train_ds = 'datasets/full_pamap.csv'
+train_ds = 'datasets/full_pamap4.csv'
 test_ds = 'datasets/spare_test2.csv'
 current_model = 'model_128245.sav'
 trained_models_folder = 'trained_models'
