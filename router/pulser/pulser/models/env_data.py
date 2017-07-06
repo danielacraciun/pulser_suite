@@ -1,7 +1,6 @@
 import datetime as dt
 
 from pulser.extensions import db
-from pulser.models.relationships import tags_posts
 from pulser.database import (
     Column,
     Model,
@@ -40,6 +39,10 @@ class EnvData(SurrogatePK, Model):
 
     def __init__(self, **kwargs):
         db.Model.__init__(self, **kwargs)
+
+    def __str__(self):
+        return self.x + " " + self.y + " " + self.z + " from " + self.sensor_type + " on " + str(
+            dt.datetime.fromtimestamp(self.timestamp / 1000))
 
 
 class HeartData(SurrogatePK, Model):

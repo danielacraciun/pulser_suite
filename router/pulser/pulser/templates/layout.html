@@ -1,6 +1,5 @@
 
 <!doctype html>
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
@@ -31,8 +30,59 @@
 
   {% block css %}
       <style>
+
       .blink_me {
   animation: blinker 2s linear infinite;
+}
+      .navbar-inverse, .navbar {
+{#    background: #000000;  /* fallback for old browsers */#}
+{#background: -webkit-linear-gradient(to right, #434343, #000000);  /* Chrome 10-25, Safari 5.1-6 */#}
+{#background:  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+
+
+background: #E6DADA;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #274046, #E6DADA);  /* Chrome 10-25, Safari 5.1-6 */
+background: ; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+*/#}
+    font-family: 'Raleway', "Helvetica Neue", Helvetica, Arial, cursive;
+    font-stretch: ultra-expanded;
+    font-weight: bolder;
+    font-size: 22px;
+    background-image: linear-gradient(to right, #676969, #222323) !important;
+
+}
+
+.navbar-text, .dropdown-menu > li > a, .navbar-nav > li > a {
+    color: white !important;
+}
+
+.navbar-nav > li > a {
+{#    border-right: 1px solid black;#}
+    border-left: 1px solid transparent;
+}
+.navbar {
+    height: 52px;
+}
+.jumbotron {
+        background-color: #1f5566 !important;
+}
+
+.btn {
+    background-image: linear-gradient(to right, #517c7e, #2d3b54); !important;
+}
+
+body {
+background-color: #ecf0f1 !important;
+font-family: 'Raleway', "Helvetica Neue", Helvetica, Arial, cursive;
+font-stretch: semi-expanded;
+}
+
+.panel-footer {
+background-color: #215A6D !important;
+}
+
+.panel-body {
+    background-color: #2D2D29 !important;
 }
 
 @keyframes blinker {
@@ -77,6 +127,9 @@
 <script type="text/javascript" src="{{ url_for('static', filename='libs/bootstrap/dist/js/bootstrap.js')}}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/plugins.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" type="text/javascript"></script>
+<link href="https://fonts.googleapis.com/css?family=Abril+Fatface" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=y=Bellefair|Raleway|Rationale" rel="stylesheet">
+
     <script>
           $(function () {
   $('[data-toggle="tooltip"]').tooltip()

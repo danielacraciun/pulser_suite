@@ -33,13 +33,17 @@ def get_next_group_id():
     return result.group + 1 if result else 1
 
 def insert_env_data(data):
+    data = dict(data)
     group_id = get_next_group_id()
     data.pop("secret")
+    if data.get("external"):
+        data.pop("external")
     for data_type in data.keys():
-        EnvData.create(
+        e = EnvData.create(
             sensor_type=data_type, x=data[data_type]["X"],
             y=data[data_type]["Y"], z=data[data_type]["Z"],
             group=group_id, timestamp=data[data_type]["timestamp"])
+        print(e)
 
 def find_env_data(given_date=None):
     to_dict = []
@@ -76,8 +80,7 @@ def latest_hr(date_restricted=False):
     if date_restricted:
         hrs = HeartData.query.filter_by(sent=False).order_by(HeartData.timestamp.asc()).all()
         for hr in hrs:
-            if datetime.fromtimestamp(float(hr.timestamp)) > datetime.now() - timedelta(minutes=3):
-                print(hr.value, datetime.fromtimestamp(float(hr.timestamp)))
+            if datetime.fromtimestamp(float(hr.timestamp)) > datetime.now() - timedelta(seconds=10):
                 hr.sent = True
                 hr.save()
                 return hr
@@ -92,14 +95,14 @@ def latest_env():
     return EnvData.query.order_by(EnvData.timestamp.desc()).first()
 
 def find_hr_data(given_date=None):
-    hr_objs = HeartData.query.filter_by(sent=False).order_by(HeartData.timestamp.desc()).all()
+    hr_objs = HeartData.query.filter_by(sent=True).order_by(HeartData.timestamp.desc()).all()
     for hr in hr_objs:
-        if abs(float(hr.timestamp) - float(given_date)/1000) < 500:
+        if abs(float(hr.timestamp) - float(given_date)/1000) < 10:
             hr.sent = True
             hr.save()
             return hr
         else:
-            return None
+           return None
 
 def group_env(env_data):
     data = []

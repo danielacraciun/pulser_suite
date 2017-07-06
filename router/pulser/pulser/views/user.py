@@ -94,66 +94,26 @@ def connections():
     move = MovementSensor.query.first()
     hr = HeartRateSensor.query.first()
     cr = CareReceiver.query.first()
-    print(move, hr)
     return render_extensions('users/connections.html', movement_sensor=move, hr_sensor=hr, carereceiver=cr)
-
-def forward_data():
-    e = latest_env()
-    ts = float(e.timestamp)
-    if datetime.fromtimestamp(ts / 1000) > datetime.now() - timedelta(minutes=1):
-        if e:
-            grouped = group_env(e)
-            corresponding_hr = find_hr_data(ts)
-            current_cr =  CareReceiver.query.first()
-            return json.dumps({
-                "user_data": [current_cr.weight, current_cr.height, current_cr.age, current_cr.sex],
-                "hr": corresponding_hr.value if corresponding_hr else 0,
-                "env": grouped if len(grouped) == 3 else []
-            })
-    else:
-        return json.dumps({"err_env": True})
-
 
 @blueprint.route('/panel', methods=['GET', 'POST'])
 @login_required
 def panel():
-
-    r = forward_data()
-
     carerecv = CareReceiver.query.first()
-    print(json.loads(r))
-    if json.loads(r).get("err_env", None):
-        flash("Environment data is not registered correctly. Check the movement sensor.", "warning")
+    hs = HeartRateSensor.query.first()
+    es = MovementSensor.query.first()
+    if not es and not hs:
+        flash("No sensors connected", "danger")
         return render_extensions('users/panel.html',
                                  carereceiver=carerecv,
-                                 level=None, hr=None)
-    elif json.loads(r).get("hr", 0) == 0:
-        flash("Heart data is too old for accurate prediction. "
-              "Check the heart rate sensor is correctly placed and synced. (press refresh to re-sync manually)", "warning")
-
-    try:
-        r = requests.get("http://localhost:9000/predict", json=r)
-    except requests.exceptions.ConnectionError:
-        flash("Unable to retrieve activity level and heart data", "danger")
-        return render_extensions('users/panel.html',
-                                 carereceiver=carerecv,
-                                 level=None, hr=None)
-
-    if r.json():
-        data = r.json()
-        if data["predict"] == "yes" and data["result"] != -1:
-            ActivityLevel.create(value=data["result"])
-            HeartLevel.create(value=data["hr_stat"], hr=data["hr"])
-        elif data["predict"] == "no" and data["result"] != -1:
-            HeartLevel.create(value=data["hr_stat"], hr=data["hr"])
-
-
+                                 level="Unknown", hr="No information")
     hr = HeartLevel.query.order_by(HeartLevel.created_at.desc()).first()
     level = ActivityLevel.query.order_by(ActivityLevel.created_at.desc()).first()
+
     return render_extensions('users/panel.html',
                              carereceiver=carerecv,
-                             level=activity_level_mapper[level.value] if level else None,
-                             hr=hr_mapper[hr.value] if hr else None)
+                             level=activity_level_mapper[level.value] if level else "Unknown",
+                             hr=hr_mapper[hr.value] if hr else "No information")
 
 
 @blueprint.route('/connect_move', methods=['GET', 'POST'])

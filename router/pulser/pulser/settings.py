@@ -27,7 +27,7 @@ class ProdConfig(Config):
     """Production configuration."""
     ENV = 'prod'
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/example'  # TODO: Change me
+    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/example'  # TODO: Set appropriate for production
     DEBUG_TB_ENABLED = False  # Disable Debug toolbar
 
 
@@ -35,13 +35,14 @@ class DevConfig(Config):
     """Development configuration."""
     ENV = 'dev'
     DEBUG = True
-    DB_NAME = 'dev.db'
+    DB_NAME = 'pulser.db'
     # Put the db file in project root
     DB_PATH = os.path.join(Config.PROJECT_ROOT, DB_NAME)
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{0}'.format(DB_PATH)
-    DEBUG_TB_ENABLED = True
+    DEBUG_TB_ENABLED = False
     ASSETS_DEBUG = True  # Don't bundle/minify static assets
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
+    OAUTHLIB_INSECURE_TRANSPORT = "1"
 
 
 class TestConfig(Config):
@@ -50,3 +51,4 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
     BCRYPT_LOG_ROUNDS = 1  # For faster tests
     WTF_CSRF_ENABLED = False  # Allows form testing
+    OAUTHLIB_INSECURE_TRANSPORT = "1"

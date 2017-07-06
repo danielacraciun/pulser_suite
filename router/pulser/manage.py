@@ -42,6 +42,7 @@ manager.add_command('db', MigrateCommand)
 manager.add_command("urls", ShowUrls())
 manager.add_command("clean", Clean())
 
+
 if __name__ == '__main__':
     os.environ['DEBUG'] = "1"
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = "1"

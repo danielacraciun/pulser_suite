@@ -3,47 +3,69 @@
 
 {% block js %}
 <script type="text/javascript" charset="utf-8">
+details = {
+    "Good": "Good heart status means the current value is in an appropriate range for the care receiver's gender and age.",
+    "Abnormal": "Abnormal heart status means that the current value is inappropriate, given the care receiver's gender and age. " +
+                "If the heart rate does not recover, it is recommended to check on the care receiver.",
+    "Low": "Low activity level means the care receiver is performing low intensity activities such as lying down, sitting or walking etc.",
+    "Medium": "Medium activity level means the care receiver is performing medium intensity activities, such as climbing or going down stairs, driving a car, using a computer or moving around at a slightly faster pace.",
+    "High": "High activity level means the care receiver is performing high intensity activities such as running, jumping rope or playing sports. If the person is not supposed to perform such physically draining activities, it is recommended to check on them.",
+    "No information": "No details available. Ensure devices are correctly placed.",
+    "Unknown": "No details available. Ensure devices are correctly placed."
+};
 function hide(){
     $("#fall-warn").attr("class","hidden");
     $("#hr-ok").attr("class","hidden");
 }
-$('#sync').click(function() {
-//Send the AJAX call to the server
-  $.ajax({
-  //The URL to process the request
-    'url' : 'http://localhost:5000/api/hr/fetch',
-  //The type of request, also known as the "method" in HTML forms
-  //Can be 'GET' or 'POST'
-    'type' : 'GET',
-  //Any post-data/get-data parameters
-  //This is optional
-  //The response from the server
-    'success' : function(data) {
-    //You can use any jQuery/JavaScript here!!!
-        console.log(data["status"]);
-      if (data["status"] > 1) {
-          console.log("done");
-        $("#hr-ok").attr("class","alert alert-success");
-      } else {
-          $(".hr").attr("class","hidden");
-      }
-    }
-  });
-});
+{#$('#sync').click(function() {#}
+{#//Send the AJAX call to the server#}
+{#  $.ajax({#}
+{#  //The URL to process the request#}
+{#    'url' : 'http://localhost:5000/api/hr/fetch',#}
+{#  //The type of request, also known as the "method" in HTML forms#}
+{#  //Can be 'GET' or 'POST'#}
+{#    'type' : 'GET',#}
+{#  //Any post-data/get-data parameters#}
+{#  //This is optional#}
+{#  //The response from the server#}
+{#    'success' : function(data) {#}
+{#    //You can use any jQuery/JavaScript here!!!#}
+{#        console.log(data["status"]);#}
+{#      if (data["status"] > 1) {#}
+{#          console.log("done");#}
+{#        $("#hr-ok").attr("class","alert alert-success");#}
+{#      } else {#}
+{#          $(".hr").attr("class","hidden");#}
+{#      }#}
+{#    }#}
+{#  });#}
 
 (function poll() {
     $.ajax({
         url: "http://localhost:5000/api/env/check_fall",
         type: "GET",
         success: function(data) {
-            var fall = data["fall"];
-            if (fall === "yes") {
-                $("#fall-warn").attr("class","alert alert-danger");
+            var fail = data["code"];
+            if (fail === -1) {
+                $("#env-warn").attr("class","alert alert-warning");
+                 $("#es").text("Unknown");
+                    $(".activity-details").text(details["Unknown"]);
+
+            } else {
+                var fall = data["fall"];
+                if (fall === "yes") {
+                    $("#fall-warn").attr("class", "alert alert-danger");
+                } else {
+                    var level = data["level"];
+                    $(".activity-details").text(details[level]);
+                    $("#es").text(level);
+                    $("#env-warn").attr("class", "hidden");
+                }
             }
         },
         dataType: "json",
         complete: setTimeout(function() {poll()}, 1000),
-        timeout: 50000
+        timeout: 5000
     });})();
 
 (function poll2() {
@@ -51,60 +73,300 @@ $('#sync').click(function() {
         url: "http://localhost:5000/api/env/check_hr",
         type: "GET",
         success: function(data) {
-            $("#hr").animate({opacity: 0.25}, 2000, function() {
-    // Animation complete.
-});
-            $("#hr").text(data["val"]);
-                        $("#hr").animate({opacity: 1}, 2000, function() {
-    // Animation complete.
-});
+            if (data["val"] > 0) {
+                $("#hs").text(data["status"]);
+                $(".hr-details").text(details[data["status"]]);
+                if(data["val"] > 100) {
+
+                    $(".heart").animate({opacity: 0.25}, 200, function () {
+                    // Animation complete.
+                });
+                    $(".heart").animate({opacity: 1}, 200, function () {
+                    // Animation complete.
+                });
+                $("#hr").text(data["val"]);
+                    $(".heart").animate({opacity: 0.25}, 200, function () {
+                    // Animation complete.
+                });
+                    $(".heart").animate({opacity: 1}, 200, function () {
+                    // Animation complete.
+                });
+                    $(".heart").animate({opacity: 0.25}, 200, function () {
+                    // Animation complete.
+                });
+                    $(".heart").animate({opacity: 1}, 200, function () {
+                    // Animation complete.
+                });
+                    $(".heart").animate({opacity: 0.25}, 200, function () {
+                    // Animation complete.
+                });
+                    $(".heart").animate({opacity: 1}, 200, function () {
+                    // Animation complete.
+                });
+
+                } else {$(".heart").animate({opacity: 0.25}, 1000, function () {
+                    // Animation complete.
+                });
+                $("#hr").text(data["val"]);
+                $(".heart").animate({opacity: 1}, 1000, function () {
+                    // Animation complete.
+                });
+                }
+
+                $("#hr-warn").attr("class","hidden");
+                $("#heart-container").attr("class", "heart");
+
+            } else if (data["val"] === 0 || data["val"] === -1) {
+
+                $("#hr").text("");
+                $(".heart").attr("class", "hidden");
+                $("#hs").text("No information");
+                $("#hr-warn").attr("class","alert alert-warning");
+                                $(".hr-details").text(details["Unknown"]);
+            }
         },
+
         dataType: "json",
         complete: setTimeout(function() {poll2()}, 5000),
         timeout: 5000
     });})();
+
+$('.rowshow .show').on('click', function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var $collapse = $this.closest('.collapse-group').find('.collapse');
+    $collapse.collapse('toggle');
+});
 </script>
 {% endblock %}
 {% block css %}
+
 <style>
-    .bordered{ border: 1px solid slategrey; border-radius: 30px;  }
+.alert {
+     font-family: 'Raleway', "Helvetica Neue", Helvetica, Arial, cursive;
+    font-stretch: ultra-expanded;
+    font-size: larger;
+}
+
+      .navbar-inverse, .navbar {
+{#    background: #000000;  /* fallback for old browsers */#}
+{#background: -webkit-linear-gradient(to right, #434343, #000000);  /* Chrome 10-25, Safari 5.1-6 */#}
+{#background:  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+
+
+background: #E6DADA;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #274046, #E6DADA);  /* Chrome 10-25, Safari 5.1-6 */
+background: ; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+*/#}
+    font-family: 'Raleway', "Helvetica Neue", Helvetica, Arial, cursive;
+    font-stretch: ultra-expanded;
+    font-weight: bolder;
+    font-size: 22px;
+    background-image: linear-gradient(to right, #676969, #222323) !important;
+}
+
+
+body {
+background-color: #ecf0f1 !important;
+font-family: 'Raleway', "Helvetica Neue", Helvetica, Arial, cursive;
+font-stretch: semi-expanded;
+}
+
+.panel-footer {
+background-color: #215A6D !important;
+}
+
+.panel-body {
+    background-color: #2D2D29 !important;
+}
+.rowshow {
+    word-wrap: break-word;
+    background-color: dimgrey;
+    border-radius: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.header {
+    position: relative;
+    padding-bottom: 10px;
+}
+.name {
+    position: relative;
+    top: 80%;
+    font-size: xx-large;
+    font-family: 'Bellefair', serif;
+    font-stretch: expanded;
+    font-weight: bold;
+}
+.lead {
+    text-align: center;
+    font-stretch: ultra-expanded;
+    font-size: xx-large;
+
+}
+.picture {
+    border: 3px solid white;
+    width: 100px;
+    height: 100px;
+}
+.sync {
+    position: relative;
+    left: 50px;
+}
+.total {
+    width:70%;
+}
+.center-me {
+  margin: 0 auto;
+    width: 90%
+{#    font-family: 'Raleway', semi-bold, sans-serif;#}
+
+}
+#hr {
+  position: absolute;
+  color: #eee;
+  z-index: 99;
+  top: 40%;
+  left: 34%;
+  transform: translate(-50%, -50%);
+    font-family: 'Rationale', "Helvetica Neue", Helvetica, Arial, cursive;
+    font-stretch: condensed;
+    font-weight: bold;
+    font-size: x-large;
+}
+.heart{
+    position: relative;
+    width: 84px;
+    height: 60px;
+}
+.heart:before,
+.heart:after{
+    position: absolute;
+    content: "";
+    left: 28px;
+    top: 0;
+    width: 30px;
+    height: 50px;
+    background: #fc5040;
+    -moz-border-radius: 20px 20px 0 0;
+    border-radius: 40px 40px 0 0;
+    -webkit-transform: rotate(-45deg);
+       -moz-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+         -o-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+    -webkit-transform-origin: 0 100%;
+       -moz-transform-origin: 0 100%;
+        -ms-transform-origin: 0 100%;
+         -o-transform-origin: 0 100%;
+            transform-origin: 0 100%;
+}
+.heart:after{
+    left: 0;
+    -webkit-transform: rotate(45deg);
+       -moz-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+         -o-transform: rotate(45deg);
+            transform: rotate(45deg);
+    -webkit-transform-origin: 100% 100%;
+       -moz-transform-origin: 100% 100%;
+        -ms-transform-origin: 100% 100%;
+         -o-transform-origin: 100% 100%;
+            transform-origin :100% 100%;
+}
+
+    .bordered{ border: 1px solid slategrey; border-radius: 40px;}
+.spaced {padding-bottom: 38px;}
+.titleb {
+    font-variant: small-caps;
+    text-align: center;
+    font-weight: bolder;
+    font-stretch: semi-condensed;
+}
+a, u {
+    text-decoration: none !important;
+}
+.shorter {
+    width: 80%;
+}
+.push {
+    margin-left:8%;
+    margin-right:7%;
+}
 </style>
 {% endblock %}
 
 {% block content %}
-    <div id="hr-ok" class="hidden">
-    Heart rate sensor is now correctly placed and sending data!
-        <a class="btn" onclick="hide()">Close</a>
-</div>
+{# Warnings that may occur here #}
 <div id="fall-warn" class="hidden">
   <strong>Danger!</strong> Care-receiver might have fallen! Ensure they are all right! <br />
-    Click here after checking on them: <a class="btn" onclick="hide()"><i class="fa fa-check" aria-hidden="true"></i></a>
+    Click here to dismiss: <a class="btn" onclick="hide()"><i class="fa fa-check" aria-hidden="true"></i></a>
 </div>
+
+<div id="hr-warn" class="hidden">
+  Heart data is too old for accurate prediction. <br />Check the heart rate sensor is correctly placed and synced.</a>
+</div>
+
+    <div id="env-warn" class="hidden">
+  Environment data (activity tracking) is not registered correctly. Check the sensors responsible.
+</div>
+
+{#Other warnings    #}
+    <div class="total center-me">
 {% if carereceiver == None %}
     <h2>No care receiver connected connected yet!</h2>
 {% else %}
-<div class="panel panel-info">
-  <div class="panel-body"><h4 class="pull-left col-lg-4">Current care receiver is
-     <a data-toggle="tooltip" data-placement="right" title="Age: {{ carereceiver.age }} years  Height: {{ carereceiver.height }} cms  Weight:{{ carereceiver.weight }} kgs">{{ carereceiver.full_name }}</a>
-  </h4><a id="sync" href=""><i class="fa fa-refresh col-m-2 pull-right sync" aria-hidden="true"> Refresh</i></a></div>
+
+<div class="panel panel-info center-me">
+  <div class="panel-body header">
+     <img src="/static/sample.png" class="picture pull-left">
+
+      <div class="pull-left col-lg-4 name">
+     <a data-toggle="tooltip" data-placement="right" title="Age: {{ carereceiver.age }} years  Height: {{ carereceiver.height }} cm Weight: {{ carereceiver.weight }} kg">{{ carereceiver.full_name }}</a>
+    </div>
+      <div class="sync col-md-2 pull-right">
+      <a class="hidden" href=""><i class="fa fa-refresh spaced" aria-hidden="true"> Refresh</i></a>
+      <div id="heart-container" class="heart"><div id="hr"></div></div>
+      </div>
+  </div>
+
   <div class="panel-footer">
     <div class="row">
 
-        <div class="col-lg-4 col-md-offset-1 pull-left bordered">
-          <h2><i class="fa fa-male"></i> Activity level</h2>
-          <h4>{{ level }}</h4>
+        <div class="col-lg-4 push bordered">
+          <h2 class="titleb"><i class="fa fa-male"></i> activity level</h2><hr class="bordered shorter">
+          <div id="es" class="lead">{{ level }}</div>
+            <div class="container-det">
+              <div class="rowshow">
+                <div class="span4 collapse-group">
+                   <p class="collapse activity-details"> </p>
+                  <p><a class="show" href="#">Details &raquo;</a></p>
+                </div>
+              </div>
+             </div>
         </div>
 
+        <div class="col-lg-4 push bordered">
+          <h2 class="titleb"><i class="fa fa-stethoscope"></i> heart status </h2><hr class="bordered shorter">
+          <div id="hs" class="lead">
+              {{ hr }}
+          </div>
+            <div class="container-det">
+              <div class="rowshow">
+                <div class="span4 collapse-group">
+                   <p class="collapse hr-details"> </p>
+                  <p><a class="show" href="#">Details &raquo;</a></p>
+                </div>
+              </div>
+             </div>
 
-            <div class="col-lg-4 col-md-offset-2 bordered">
-          <h2><i class="fa fa-heart"></i> Heart status </h2>
-                <h4> {{ hr }} <div id="hr" class="bordered centered col-xs-2" style="text-align: center; background-color: firebrick"></div></h4>
 
         </div>
     </div>
 
   </div>
 </div>
+
 {% endif %}
 
 {% endblock %}
